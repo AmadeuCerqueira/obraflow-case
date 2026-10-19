@@ -1,4 +1,4 @@
-# Desafio Full-stack — Dokimos Lite (ObraFlow)
+# Desafio Full-stack — ObraFlow
 
 ## Contexto
 
