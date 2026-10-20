@@ -182,4 +182,7 @@ Repositório deve conter:
 
 ## Contato
 
-Envie o link do repositório + Loom em até 5 dias. Boa sorte! 🚀
+
+**Jonathan Bispo**  
+WhatsApp: [+55 71 99204-4335](https://wa.me/5571992044335)  
+E-mail: [contrato@obraflow.io](mailto:contrato@obraflow.io)
