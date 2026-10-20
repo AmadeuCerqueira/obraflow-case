@@ -1,3 +1,5 @@
+![Banner do desafio ObraFlow](assets/banner.png)
+
 # Desafio Full-stack — ObraFlow
 
 Bem-vindo(a) ao nosso processo seletivo! Estamos buscando alguém com curiosidade técnica, autonomia e, acima de tudo, **visão de produto e criatividade** para transformar problemas reais em soluções.
