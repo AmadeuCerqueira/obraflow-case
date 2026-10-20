@@ -173,12 +173,11 @@ Repositório deve conter:
 | Funcionamento completo: front-end, back-end e persistência | 25% |
 | Modelagem e implementação das regras de alçada | 20% |
 | Qualidade de código, organização e decisões técnicas | 15% |
-| **Desenho de UI: hierarquia, clareza, consistência** | 15% |
+| **Desenho de UI: hierarquia, clareza, consistência** | 20% |
 | Estados (loading / empty / erro), responsividade e validações | 10% |
 | Documentação (`## Decisões técnicas`) | 10% |
-| Testes (diferencial) | 5% |
 
-**Tempo estimado: 5 a 8 horas.** IA é permitida — mas você precisará explicar cada decisão na entrevista de 30 min.
+IA é permitida — mas você precisará explicar cada decisão na entrevista de 30 min.
 
 ---
 
