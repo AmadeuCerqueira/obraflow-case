@@ -1,8 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +8,56 @@ generator client {
 
 datasource db {
   provider = "sqlite"
+}
+
+model Obra {
+  idObra  Int      @id @default(autoincrement())
+  nome    String
+  pedidos Pedido[]
+}
+
+model Usuario {
+  idUsuario Int    @id @default(autoincrement())
+  nome      String
+  email     String @unique
+}
+
+model Fornecedor {
+  idFornecedor Int      @id @default(autoincrement())
+  nome         String
+  cnpj         String   @unique
+  pedidos      Pedido[]
+}
+
+enum StatusPedido {
+  PENDENTE
+  APROVADO
+  REJEITADO
+}
+
+model Pedido {
+  idPedido      Int          @id @default(autoincrement())
+  idObra        Int
+  idFornecedor  Int
+  dataPedido    DateTime     @default(now())
+  observacoes   String?
+  totalCentavos Int
+  status        StatusPedido @default(PENDENTE)
+  etapaAtual    Int?
+
+  obra       Obra         @relation(fields: [idObra], references: [idObra])
+  fornecedor Fornecedor   @relation(fields: [idFornecedor], references: [idFornecedor])
+  itens      ItemPedido[]
+}
+
+model ItemPedido {
+  idItemPedido          Int    @id @default(autoincrement())
+  idPedido              Int
+  descricao             String
+  quantidade            Float
+  unidade               String
+  precoUnitarioCentavos Int
+  totalCentavos         Int
+
+  pedido Pedido @relation(fields: [idPedido], references: [idPedido])
 }
