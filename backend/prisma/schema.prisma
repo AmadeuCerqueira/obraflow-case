@@ -14,12 +14,15 @@ model Obra {
   idObra  Int      @id @default(autoincrement())
   nome    String
   pedidos Pedido[]
+  regras  Regra[]
 }
 
 model Usuario {
-  idUsuario Int    @id @default(autoincrement())
-  nome      String
-  email     String @unique
+  idUsuario       Int              @id @default(autoincrement())
+  nome            String
+  email           String           @unique
+  regrasAprovador RegraAprovador[]
+  etapas          EtapaAprovacao[]
 }
 
 model Fornecedor {
@@ -45,9 +48,10 @@ model Pedido {
   status        StatusPedido @default(PENDENTE)
   etapaAtual    Int?
 
-  obra       Obra         @relation(fields: [idObra], references: [idObra])
-  fornecedor Fornecedor   @relation(fields: [idFornecedor], references: [idFornecedor])
+  obra       Obra             @relation(fields: [idObra], references: [idObra])
+  fornecedor Fornecedor       @relation(fields: [idFornecedor], references: [idFornecedor])
   itens      ItemPedido[]
+  etapas     EtapaAprovacao[]
 }
 
 model ItemPedido {
@@ -60,4 +64,46 @@ model ItemPedido {
   totalCentavos         Int
 
   pedido Pedido @relation(fields: [idPedido], references: [idPedido])
+}
+
+model Regra {
+  idRegra             Int  @id @default(autoincrement())
+  idObra              Int
+  valorMaximoCentavos Int?
+
+  obra        Obra             @relation(fields: [idObra], references: [idObra])
+  aprovadores RegraAprovador[]
+}
+
+model RegraAprovador {
+  idRegraAprovador Int @id @default(autoincrement())
+  idRegra          Int
+  idUsuario        Int
+  ordem            Int
+
+  regra   Regra   @relation(fields: [idRegra], references: [idRegra], onDelete: Cascade)
+  usuario Usuario @relation(fields: [idUsuario], references: [idUsuario])
+
+  @@unique([idRegra, ordem])
+}
+
+enum StatusEtapa {
+  AGUARDANDO
+  APROVADO
+  REJEITADO
+}
+
+model EtapaAprovacao {
+  idEtapaAprovacao Int         @id @default(autoincrement())
+  idPedido         Int
+  idUsuario        Int
+  ordem            Int
+  status           StatusEtapa @default(AGUARDANDO)
+  motivo           String?
+  decididoEm       DateTime?
+
+  pedido  Pedido  @relation(fields: [idPedido], references: [idPedido])
+  usuario Usuario @relation(fields: [idUsuario], references: [idUsuario])
+
+  @@unique([idPedido, ordem])
 }
