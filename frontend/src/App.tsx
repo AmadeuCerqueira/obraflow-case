@@ -34,7 +34,7 @@ export default function App() {
       </header>
 
       <main className="conteudo">
-        {pagina === "novo" && <NovoPedido />}
+        {pagina === "novo" && <NovoPedido aoVerPedidos={() => setPagina("aprovacoes")} />}
         {pagina === "aprovacoes" && <Aprovacoes />}
         {pagina === "regras" && <Regras />}
       </main>

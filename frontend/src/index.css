@@ -79,4 +79,63 @@ th { font-size: 0.8rem; color: var(--texto-suave); font-weight: 600; text-transf
 .aviso { padding: 12px 14px; border-radius: var(--raio); margin-bottom: 16px; }
 .aviso-erro { background: var(--perigo-claro); color: var(--perigo); }
 .aviso-sucesso { background: var(--sucesso-claro); color: var(--sucesso); }
-.aviso-info { background: var(--fundo); color: var(--texto-suave); border: 1px solid var(--borda); }
+.aviso-info { background: #eef4fb; color: #1e4e8c; border: 1px solid #cfe0f5; }
+
+/* página de aprovações */
+.cabecalho-pagina { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 24px; }
+.cabecalho-pagina .subtitulo { margin: 0; }
+.campo-usuario { min-width: 240px; }
+.filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.filtro { font: inherit; font-size: 0.9rem; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--borda); background: var(--superficie); color: var(--texto-suave); cursor: pointer; }
+.filtro.ativo { border-color: var(--primaria); color: var(--primaria-escura); background: var(--primaria-clara); font-weight: 600; }
+.texto-suave { color: var(--texto-suave); font-size: 0.85rem; }
+
+/* cadeia de aprovação */
+.cadeia { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; list-style: none; margin: 0; padding: 0; }
+.cadeia li + li::before { content: "→"; color: var(--texto-suave); margin-right: 4px; }
+.etapa { display: inline-block; font-size: 0.8rem; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.etapa-aprovada { background: var(--sucesso-claro); color: var(--sucesso); }
+.etapa-rejeitada { background: var(--perigo-claro); color: var(--perigo); }
+.etapa-atual { background: var(--primaria-clara); color: var(--primaria-escura); font-weight: 600; outline: 1px solid var(--primaria); }
+.etapa-proxima { background: var(--fundo); color: var(--texto-suave); }
+.etapa-cancelada { background: var(--fundo); color: var(--texto-suave); text-decoration: line-through; }
+
+/* detalhes do pedido */
+.voltar { margin-bottom: 16px; }
+.titulo-detalhe { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.info { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 16px 0 0; }
+.info dt { font-size: 0.8rem; color: var(--texto-suave); }
+.info dd { margin: 2px 0 0; font-weight: 600; }
+.painel-decisao { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+.painel-decisao .aviso { margin-bottom: 0; }
+.historico { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.historico li { padding-left: 12px; border-left: 3px solid var(--borda); }
+.historico .motivo { margin: 4px 0 0; font-style: italic; }
+
+/* novo pedido */
+.campo .rotulo { font-size: 0.85rem; font-weight: 600; }
+.campo-largo { grid-column: 1 / -1; }
+.obrigatorio { color: var(--perigo); }
+.item { border: 1px solid var(--borda); border-radius: var(--raio); padding: 16px; margin-bottom: 12px; }
+.item-topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.item-campos { display: grid; grid-template-columns: 3fr 1fr 1fr 1.3fr 1.3fr; gap: 12px; align-items: start; }
+.valor-calculado { padding: 8px 10px; background: var(--fundo); border-radius: var(--raio); text-align: right; font-weight: 600; }
+.botao-link { background: none; border: none; padding: 0; font: inherit; font-size: 0.85rem; color: var(--primaria-escura); cursor: pointer; text-decoration: underline; }
+.botao-link.perigo { color: var(--perigo); }
+.resumo { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; }
+.resumo-acoes { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.total-pedido { font-size: 1.6rem; font-weight: 700; }
+@media (max-width: 720px) {
+  .item-campos { grid-template-columns: 1fr 1fr; }
+  .item-campos .campo-descricao { grid-column: 1 / -1; }
+  .resumo-acoes { align-items: stretch; width: 100%; }
+}
+
+/* regras de alçada */
+h3 { font-size: 0.95rem; margin: 20px 0 8px; }
+.campo .opcao { display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer; }
+.opcao input { width: auto; }
+.lista-aprovadores { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.lista-aprovadores li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 12px; border: 1px solid var(--borda); border-radius: var(--raio); }
+.adicionar-aprovador { display: flex; gap: 8px; margin-bottom: 16px; max-width: 420px; }
+.adicionar-aprovador .botao { white-space: nowrap; }
