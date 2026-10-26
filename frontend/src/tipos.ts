@@ -35,6 +35,7 @@ export type Pedido = {
   fornecedor: Fornecedor;
   etapas: Etapa[];
   itens?: ItemPedido[];
+  _count?: { itens: number };
 };
 
 export type Regra = {
