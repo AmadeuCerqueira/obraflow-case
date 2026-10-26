@@ -14,12 +14,29 @@ type ItemEntrada = {
 type PedidoEntrada = {
   idObra: number;
   idFornecedor: number;
+  dataPedido: string;
   observacoes?: string;
   itens: ItemEntrada[];
 };
 
 export async function criarPedido(dados: PedidoEntrada) {
-  // 1. valida os itens
+  // 1. valida os dados gerais e os itens
+  if (!Number.isInteger(dados.idObra)) {
+    throw new ErroDeNegocio("Selecione a obra.");
+  }
+  if (!Number.isInteger(dados.idFornecedor)) {
+    throw new ErroDeNegocio("Selecione o fornecedor.");
+  }
+
+  // a data chega como "2026-10-26". Guardo ao meio-dia para o fuso não jogar para o dia anterior
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dados.dataPedido ?? "")) {
+    throw new ErroDeNegocio("Informe uma data do pedido válida.");
+  }
+  const dataPedido = new Date(`${dados.dataPedido}T12:00:00`);
+  if (Number.isNaN(dataPedido.getTime())) {
+    throw new ErroDeNegocio("Informe uma data do pedido válida.");
+  }
+
   if (!dados.itens || dados.itens.length === 0) {
     throw new ErroDeNegocio("O pedido precisa ter pelo menos um item.");
   }
@@ -31,8 +48,8 @@ export async function criarPedido(dados: PedidoEntrada) {
     if (!Number.isFinite(item.quantidade) || item.quantidade <= 0) {
       throw new ErroDeNegocio("A quantidade de cada item deve ser maior que zero.");
     }
-    if (!Number.isInteger(item.precoUnitarioCentavos) || item.precoUnitarioCentavos <= 0) {
-      throw new ErroDeNegocio("O preço de cada item deve ser maior que zero.");
+    if (!Number.isInteger(item.precoUnitarioCentavos) || item.precoUnitarioCentavos < 0) {
+      throw new ErroDeNegocio("O preço de cada item não pode ser negativo.");
     }
     if (!UNIDADES.includes(item.unidade)) {
       throw new ErroDeNegocio(`Unidade inválida: ${item.unidade}`);
@@ -86,6 +103,7 @@ export async function criarPedido(dados: PedidoEntrada) {
     data: {
       idObra: obra.idObra,
       idFornecedor: fornecedor.idFornecedor,
+      dataPedido,
       observacoes: dados.observacoes?.trim() || null,
       totalCentavos,
       status: "PENDENTE",
