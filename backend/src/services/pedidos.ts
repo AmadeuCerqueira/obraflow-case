@@ -101,3 +101,69 @@ export async function criarPedido(dados: PedidoEntrada) {
     include: { itens: true, etapas: true },
   });
 }
+
+export async function decidirPedido(
+  idPedido: number,
+  idUsuario: number,
+  decisao: "APROVADO" | "REJEITADO",
+  motivo?: string
+) {
+  const motivoLimpo = motivo?.trim();
+  if (decisao === "REJEITADO" && !motivoLimpo) {
+    throw new ErroDeNegocio("Informe o motivo da rejeição.");
+  }
+
+  // tudo dentro de uma transação: ou salva todas as mudanças, ou nenhuma
+  return prisma.$transaction(async (tx) => {
+    const pedido = await tx.pedido.findUnique({
+      where: { idPedido },
+      include: { etapas: true },
+    });
+    if (!pedido) {
+      throw new ErroDeNegocio("Pedido não encontrado.");
+    }
+    if (pedido.status !== "PENDENTE" || pedido.etapaAtual === null) {
+      throw new ErroDeNegocio("Este pedido já foi concluído e não aceita novas decisões.");
+    }
+
+    const etapa = pedido.etapas.find((e) => e.ordem === pedido.etapaAtual);
+    if (!etapa) {
+      throw new Error(`Pedido ${idPedido} sem a etapa ${pedido.etapaAtual}`);
+    }
+    if (etapa.idUsuario !== idUsuario) {
+      throw new ErroDeNegocio("Não é a sua vez de decidir sobre este pedido.");
+    }
+
+    // só grava se a etapa ainda estiver aguardando. Evita duas decisões ao mesmo tempo
+    const atualizada = await tx.etapaAprovacao.updateMany({
+      where: { idEtapaAprovacao: etapa.idEtapaAprovacao, status: "AGUARDANDO" },
+      data: {
+        status: decisao,
+        motivo: decisao === "REJEITADO" ? motivoLimpo : null,
+        decididoEm: new Date(),
+      },
+    });
+    if (atualizada.count === 0) {
+      throw new ErroDeNegocio("Este pedido acabou de ser decidido. Atualize a tela.");
+    }
+
+    const eraUltimaEtapa = etapa.ordem === pedido.etapas.length;
+
+    let status: "PENDENTE" | "APROVADO" | "REJEITADO" = "PENDENTE";
+    let etapaAtual: number | null = etapa.ordem + 1;
+
+    if (decisao === "REJEITADO") {
+      status = "REJEITADO";
+      etapaAtual = null;
+    } else if (eraUltimaEtapa) {
+      status = "APROVADO";
+      etapaAtual = null;
+    }
+
+    return tx.pedido.update({
+      where: { idPedido },
+      data: { status, etapaAtual },
+      include: { itens: true, etapas: { orderBy: { ordem: "asc" } } },
+    });
+  });
+}

@@ -1,10 +1,21 @@
 import express, { type Request, type Response, type NextFunction } from "express";
+import cors from "cors";
 import { prisma } from "./lib/prisma";
-import { criarPedido } from "./services/pedidos";
+import { criarPedido, decidirPedido } from "./services/pedidos";
 import { ErroDeNegocio } from "./erros";
 
 const app = express();
+app.use(cors());
 app.use(express.json());
+
+// converte o id que vem na URL ou no corpo para número, e recusa se não for válido
+function lerId(valor: unknown): number {
+  const id = Number(valor);
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new ErroDeNegocio("Identificador inválido.");
+  }
+  return id;
+}
 
 app.get("/", (req, res) => {
   res.json({ mensagem: "API do ObraFlow funcionando" });
@@ -20,9 +31,58 @@ app.get("/fornecedores", async (req, res) => {
   res.json(fornecedores);
 });
 
+app.get("/usuarios", async (req, res) => {
+  const usuarios = await prisma.usuario.findMany({ orderBy: { nome: "asc" } });
+  res.json(usuarios);
+});
+
+app.get("/pedidos", async (req, res) => {
+  const pedidos = await prisma.pedido.findMany({
+    orderBy: { dataPedido: "desc" },
+    include: {
+      obra: true,
+      fornecedor: true,
+      etapas: { orderBy: { ordem: "asc" }, include: { usuario: true } },
+    },
+  });
+  res.json(pedidos);
+});
+
+app.get("/pedidos/:id", async (req, res) => {
+  const pedido = await prisma.pedido.findUnique({
+    where: { idPedido: lerId(req.params.id) },
+    include: {
+      obra: true,
+      fornecedor: true,
+      itens: true,
+      etapas: { orderBy: { ordem: "asc" }, include: { usuario: true } },
+    },
+  });
+  if (!pedido) {
+    res.status(404).json({ erro: "Pedido não encontrado." });
+    return;
+  }
+  res.json(pedido);
+});
+
 app.post("/pedidos", async (req, res) => {
   const pedido = await criarPedido(req.body);
   res.status(201).json(pedido);
+});
+
+app.post("/pedidos/:id/aprovar", async (req, res) => {
+  const pedido = await decidirPedido(lerId(req.params.id), lerId(req.body.idUsuario), "APROVADO");
+  res.json(pedido);
+});
+
+app.post("/pedidos/:id/rejeitar", async (req, res) => {
+  const pedido = await decidirPedido(
+    lerId(req.params.id),
+    lerId(req.body.idUsuario),
+    "REJEITADO",
+    req.body.motivo
+  );
+  res.json(pedido);
 });
 
 // trata os erros de todas as rotas num lugar só. Precisa ficar depois das rotas
