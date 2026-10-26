@@ -40,10 +40,11 @@ app.get("/usuarios", async (req, res) => {
 app.get("/pedidos", async (req, res) => {
   const pedidos = await prisma.pedido.findMany({
     orderBy: { dataPedido: "desc" },
-    include: {
+        include: {
       obra: true,
       fornecedor: true,
       etapas: { orderBy: { ordem: "asc" }, include: { usuario: true } },
+      _count: { select: { itens: true } },
     },
   });
   res.json(pedidos);

@@ -23,7 +23,7 @@ async function main() {
   await prisma.usuario.deleteMany();
   await prisma.obra.deleteMany();
 
-  const sol = await prisma.obra.create({ data: { nome: "Residencial Sol Nascente" } });
+  const sol = await prisma.obra.create({ data: { nome: "Edifício Sol Nascente" } });
   const mar = await prisma.obra.create({ data: { nome: "Edifício Mar Azul" } });
 
   const amanda = await prisma.usuario.create({ data: { nome: "Amanda Souza", email: "amanda.souza@example.com" } });
