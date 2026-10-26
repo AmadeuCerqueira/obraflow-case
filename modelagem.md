@@ -52,8 +52,8 @@ Quem aprova em cada faixa.
 - ordem           (quem aprova primeiro, segundo...)
 
 ## EtapaAprovacao
-Fila de aprovação de cada pedido. Copio da regra quando o pedido é criado,
-assim se a regra mudar depois o pedido não é afetado. Serve de histórico também.
+Fila de aprovação de cada pedido. Faço uma copia regra quando o pedido é criado,
+assim se a regra/faixa mudar depois o pedido não é afetado. Serve de histórico também.
 - idEtapaAprovacao
 - idPedido        (FK Pedido)
 - idUsuario       (FK Usuario)

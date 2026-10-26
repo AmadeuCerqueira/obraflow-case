@@ -3,6 +3,7 @@ import cors from "cors";
 import { prisma } from "./lib/prisma";
 import { criarPedido, decidirPedido } from "./services/pedidos";
 import { ErroDeNegocio } from "./erros";
+import { listarRegras, salvarRegras } from "./services/regras";
 
 const app = express();
 app.use(cors());
@@ -83,6 +84,14 @@ app.post("/pedidos/:id/rejeitar", async (req, res) => {
     req.body.motivo
   );
   res.json(pedido);
+});
+
+app.get("/obras/:id/regras", async (req, res) => {
+  res.json(await listarRegras(lerId(req.params.id)));
+});
+
+app.put("/obras/:id/regras", async (req, res) => {
+  res.json(await salvarRegras(lerId(req.params.id), req.body.faixas));
 });
 
 // trata os erros de todas as rotas num lugar só. Precisa ficar depois das rotas
