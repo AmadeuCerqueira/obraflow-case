@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { ErroDeNegocio } from "../erros";
-import { escolherFaixa } from "./alcada";
+import { escolherFaixa, proximoEstado } from "./alcada";
 
 const UNIDADES = ["un", "kg", "m", "m²", "h"];
 
@@ -165,18 +165,7 @@ export async function decidirPedido(
       throw new ErroDeNegocio("Este pedido acabou de ser decidido. Atualize a tela.");
     }
 
-    const eraUltimaEtapa = etapa.ordem === pedido.etapas.length;
-
-    let status: "PENDENTE" | "APROVADO" | "REJEITADO" = "PENDENTE";
-    let etapaAtual: number | null = etapa.ordem + 1;
-
-    if (decisao === "REJEITADO") {
-      status = "REJEITADO";
-      etapaAtual = null;
-    } else if (eraUltimaEtapa) {
-      status = "APROVADO";
-      etapaAtual = null;
-    }
+       const { status, etapaAtual } = proximoEstado(etapa.ordem, pedido.etapas.length, decisao);
 
     return tx.pedido.update({
       where: { idPedido },
