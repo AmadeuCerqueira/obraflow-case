@@ -95,6 +95,43 @@ app.put("/obras/:id/regras", async (req, res) => {
   res.json(await salvarRegras(lerId(req.params.id), req.body.faixas));
 });
 
+// não fiz tela pra cadastrar obra, usuário e fornecedor, mas dá pra cadastrar pela API
+app.post("/obras", async (req, res) => {
+  const nome = String(req.body.nome ?? "").trim();
+  if (!nome) throw new ErroDeNegocio("Informe o nome da obra.");
+
+  res.status(201).json(await prisma.obra.create({ data: { nome } }));
+});
+
+app.post("/usuarios", async (req, res) => {
+  const nome = String(req.body.nome ?? "").trim();
+  const email = String(req.body.email ?? "").trim().toLowerCase();
+
+  if (!nome) throw new ErroDeNegocio("Informe o nome do usuário.");
+  if (!/^\S+@\S+\.\S+$/.test(email)) throw new ErroDeNegocio("Informe um e-mail válido.");
+  if (await prisma.usuario.findUnique({ where: { email } })) {
+    throw new ErroDeNegocio("Já existe um usuário com esse e-mail.");
+  }
+
+  res.status(201).json(await prisma.usuario.create({ data: { nome, email } }));
+});
+
+app.post("/fornecedores", async (req, res) => {
+  const nome = String(req.body.nome ?? "").trim();
+  const digitos = String(req.body.cnpj ?? "").replace(/\D/g, "");
+
+  if (!nome) throw new ErroDeNegocio("Informe o nome do fornecedor.");
+  if (digitos.length !== 14) throw new ErroDeNegocio("Informe um CNPJ com 14 dígitos.");
+
+  // salvo o CNPJ sempre com pontuação, senão "12345678000190" e "12.345.678/0001-90" iam contar como diferentes
+  const cnpj = digitos.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
+  if (await prisma.fornecedor.findUnique({ where: { cnpj } })) {
+    throw new ErroDeNegocio("Já existe um fornecedor com esse CNPJ.");
+  }
+
+  res.status(201).json(await prisma.fornecedor.create({ data: { nome, cnpj } }));
+});
+
 // trata os erros de todas as rotas num lugar só. Precisa ficar depois das rotas
 app.use((erro: unknown, req: Request, res: Response, next: NextFunction) => {
   if (erro instanceof ErroDeNegocio) {
