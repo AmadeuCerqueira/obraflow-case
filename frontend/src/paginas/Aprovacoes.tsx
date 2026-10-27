@@ -81,8 +81,8 @@ export default function Aprovacoes() {
         {visiveis.length === 0 ? (
           <Vazio titulo="Nada por aqui" descricao="Nenhum pedido com essa situação." />
         ) : (
-          <div className="cartao tabela-rolagem">
-            <table>
+            <div className="cartao tabela-rolagem">
+            <table className="tabela-cartoes">
               <thead>
                 <tr>
                   <th>Pedido</th>
@@ -100,24 +100,28 @@ export default function Aprovacoes() {
                   const minhaVez = p.status === "PENDENTE" && etapaDaVez?.idUsuario === idUsuario;
 
                   return (
-                    <tr key={p.idPedido}>
-                      <td>
-                        <strong>#{p.idPedido}</strong>
-                        <div className="texto-suave">{formatarData(p.dataPedido)}</div>
+                                       <tr key={p.idPedido}>
+                      <td data-rotulo="Pedido">
+                        <div>
+                          <strong>#{p.idPedido}</strong>
+                          <div className="texto-suave">{formatarData(p.dataPedido)}</div>
+                        </div>
                       </td>
-                      <td>
-                        {p.obra.nome}
-                        <div className="texto-suave">{p.fornecedor.nome}</div>
+                      <td data-rotulo="Obra / Fornecedor">
+                        <div>
+                          {p.obra.nome}
+                          <div className="texto-suave">{p.fornecedor.nome}</div>
+                        </div>
                       </td>
-                      <td className="numero">{p._count?.itens ?? 0}</td>
-                      <td className="numero">{formatarReais(p.totalCentavos)}</td>
-                      <td>
+                      <td data-rotulo="Itens" className="numero">{p._count?.itens ?? 0}</td>
+                      <td data-rotulo="Total" className="numero">{formatarReais(p.totalCentavos)}</td>
+                      <td data-rotulo="Situação">
                         <span className={`selo selo-${p.status}`}>{ROTULO_STATUS[p.status]}</span>
                       </td>
-                      <td>
+                      <td data-rotulo="Alçada">
                         <CadeiaAlcada etapas={p.etapas} etapaAtual={p.etapaAtual} />
                       </td>
-                      <td>
+                      <td data-rotulo="Ações">
                         <button
                           className={minhaVez ? "botao botao-pequeno" : "botao botao-secundario botao-pequeno"}
                           onClick={() => setIdAberto(p.idPedido)}

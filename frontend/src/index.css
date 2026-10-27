@@ -139,3 +139,18 @@ h3 { font-size: 0.95rem; margin: 20px 0 8px; }
 .lista-aprovadores li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 12px; border: 1px solid var(--borda); border-radius: var(--raio); }
 .adicionar-aprovador { display: flex; gap: 8px; margin-bottom: 16px; max-width: 420px; }
 .adicionar-aprovador .botao { white-space: nowrap; }
+
+/* no celular, a marca fica em cima e as abas embaixo, para nenhuma aba ficar cortada */
+@media (max-width: 600px) {
+  .topo-interno { flex-direction: column; align-items: flex-start; height: auto; gap: 4px; padding: 10px 16px; }
+  .abas { width: 100%; }
+}
+
+/* no celular, cada linha da tabela de pedidos vira um cartão */
+@media (max-width: 720px) {
+  .tabela-cartoes thead { display: none; }
+  .tabela-cartoes tr { display: block; padding: 12px 0; border-bottom: 1px solid var(--borda); }
+  .tabela-cartoes td { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 6px 0; border: none; text-align: right; }
+  .tabela-cartoes td::before { content: attr(data-rotulo); font-size: 0.8rem; color: var(--texto-suave); text-align: left; white-space: nowrap; }
+  .tabela-cartoes .cadeia { justify-content: flex-end; }
+}
