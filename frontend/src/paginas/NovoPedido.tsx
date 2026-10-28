@@ -74,6 +74,7 @@ export default function NovoPedido({ aoVerPedidos }: Props) {
   const [observacoes, setObservacoes] = useState("");
   const [itens, setItens] = useState<ItemForm[]>([itemVazio()]);
   const [regras, setRegras] = useState<Regra[]>([]);
+  const [regrasProntas, setRegrasProntas] = useState(false);
 
   const [tocados, setTocados] = useState<Set<string>>(new Set());
   const [enviando, setEnviando] = useState(false);
@@ -101,14 +102,19 @@ export default function NovoPedido({ aoVerPedidos }: Props) {
     carregar();
   }, [carregar]);
 
-  // busca as faixas da obra escolhida para mostrar quem vai aprovar
+    // busca as faixas da obra escolhida para mostrar quem vai aprovar
   useEffect(() => {
+    setRegrasProntas(false);
     if (!idObra) {
       setRegras([]);
       return;
     }
     api<Regra[]>(`/obras/${idObra}/regras`)
-      .then(setRegras)
+      .then((lista) => {
+        setRegras(lista);
+        setRegrasProntas(true);
+      })
+      // se der erro aqui, só não mostro a prévia. O back confere a regra de novo ao cadastrar
       .catch(() => setRegras([]));
   }, [idObra]);
 
@@ -124,7 +130,7 @@ export default function NovoPedido({ aoVerPedidos }: Props) {
   const errosItens = itens.map(validarItem);
   const semItens = itens.length === 0;
   const totalPedido = itens.reduce((soma, item) => soma + (totalDoItem(item) ?? 0), 0);
-  const faixa = idObra && !semItens ? faixaPrevista(regras, totalPedido) : undefined;
+  const faixa = idObra && !semItens && regrasProntas ? faixaPrevista(regras, totalPedido) : undefined;
 
   const formularioValido =
     !errosGerais.obra &&
@@ -371,7 +377,7 @@ export default function NovoPedido({ aoVerPedidos }: Props) {
               Quem vai aprovar: {faixa.aprovadores.map((a) => a.usuario.nome).join(" → ")}
             </div>
           )}
-          {idObra && !semItens && !faixa && (
+            {idObra && !semItens && regrasProntas && !faixa && (
             <div className="erro-campo">
               Nenhuma regra de alçada desta obra cobre esse valor. Ajuste as regras antes de cadastrar.
             </div>
