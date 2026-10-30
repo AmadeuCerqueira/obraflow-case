@@ -10,7 +10,7 @@ export function Carregando({ texto = "Carregando..." }: { texto?: string }) {
 export function ErroComRetry({ mensagem, aoTentarDeNovo }: { mensagem: string; aoTentarDeNovo: () => void }) {
   return (
     <div className="estado">
-      <h2>Algo deu errado</h2>
+      <h2>Não foi possível carregar os dados</h2>
       <p>{mensagem}</p>
       <button className="botao" onClick={aoTentarDeNovo}>Tentar novamente</button>
     </div>
